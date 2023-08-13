@@ -39,7 +39,7 @@ public class APIController : MonoBehaviour
     #endregion
 
     #region UNITY METHODS
-    private async void Awake()
+    private void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -48,11 +48,22 @@ public class APIController : MonoBehaviour
         }
 
         Instance = this;
-        await ConnectAsync();
     }
     #endregion
 
     #region METHODS
+    public async void StartConnection()
+    {
+        try
+        {
+            await ConnectAsync();
+        }
+        catch (Exception ex)
+        {
+            Debug.Log(ex.GetBaseException().Message);
+        }
+    }
+
     private async Task ConnectAsync()
     {
         try

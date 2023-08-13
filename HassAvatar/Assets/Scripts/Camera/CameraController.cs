@@ -3,35 +3,66 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     #region ATTRIBUTES
-    [SerializeField] private Transform _target;
+    [Header("Camera settings")]
     [SerializeField] private float _distance = 5.0f;
     [SerializeField] private float _minDistance = 2.0f;
     [SerializeField] private float _maxDistance = 10.0f;
     [SerializeField] private float _rotationSpeed = 2.0f;
+    private Transform _target;
     private float _rotationX = 180.0f;
     private Bounds _targetBounds;
     #endregion
 
+    #region PROPERTIES
+    public static CameraController Instance { get; private set; }
+    #endregion
+
     #region UNITY METHODS
-    private void Start()
+    private void Awake()
     {
-        if (_target == null)
+        if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("Camera target not defined");
+            Destroy(this);
             return;
         }
 
-        CalculateTargetBounds();
+        Instance = this;
     }
 
     private void Update()
     {
-        HandleInput();
-        ManageCamera();
+        if (_target != null)
+        {
+            HandleInput();
+            ManageCamera();
+        }
     }
     #endregion
 
     #region METHODS
+    public void InitializeCamera(Transform target)
+    {
+        _target = target;
+
+        CalculateTargetBounds();
+    }
+
+    private void CalculateTargetBounds()
+    {
+        Renderer[] renderers = _target.GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length == 0)
+        {
+            return;
+        }
+
+        _targetBounds = renderers[0].bounds;
+
+        for (int i = 1; i < renderers.Length; i++)
+        {
+            _targetBounds.Encapsulate(renderers[i].bounds);
+        }
+    }
 
     private void HandleInput()
     {
@@ -44,32 +75,8 @@ public class CameraController : MonoBehaviour
         _distance = Mathf.Clamp(_distance, _minDistance, _maxDistance);
     }
 
-    private void CalculateTargetBounds()
-    {
-        Renderer[] renderers = _target.GetComponentsInChildren<Renderer>();
-
-        if (renderers.Length == 0)
-        {
-            Debug.LogWarning("No renderers found on target or its children.");
-            return;
-        }
-
-        _targetBounds = renderers[0].bounds;
-
-        for (int i = 1; i < renderers.Length; i++)
-        {
-            _targetBounds.Encapsulate(renderers[i].bounds);
-        }
-    }
-
     private void ManageCamera()
     {
-        if (_target == null)
-        {
-            Debug.LogWarning("Camera target not defined");
-            return;
-        }
-
         Vector3 rotationEuler = new Vector3(0, _rotationX, 0);
         Quaternion rotation = Quaternion.Euler(rotationEuler);
 

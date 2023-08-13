@@ -1,7 +1,6 @@
 using HassClient.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 
 public class HomeAssistantController : MonoBehaviour
@@ -30,6 +29,7 @@ public class HomeAssistantController : MonoBehaviour
         Areas = new List<Area>();
         Domains = new List<Domain>();
     }
+
     private void Start()
     {
         APIController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
@@ -65,20 +65,6 @@ public class HomeAssistantController : MonoBehaviour
                 Name = tempArea.Name
             });
         }
-    }
-
-    private async void SyncTimeAsync()
-    {
-        if (!APIController.Instance.IsConnected)
-        {
-            return;
-        }
-
-        IEnumerable<ServiceDomain> services = await APIController.Instance.Connection.GetServicesAsync();
-
-
-
-        
     }
 
     private async void DiscoverDomainsAsync()
@@ -118,7 +104,6 @@ public class HomeAssistantController : MonoBehaviour
         DiscoverAreasAsync();
         DiscoverDomainsAsync();
         DiscoverPanelsAsync();
-        SyncTimeAsync();
     }
     #endregion
 
