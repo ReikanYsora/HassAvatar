@@ -7,9 +7,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float _distance = 5.0f;
     [SerializeField] private float _minDistance = 2.0f;
     [SerializeField] private float _maxDistance = 10.0f;
-    [SerializeField] private float _rotationSpeed = 2.0f;
     private Transform _target;
-    private float _rotationX = 180.0f;
     private Bounds _targetBounds;
     #endregion
 
@@ -29,11 +27,18 @@ public class CameraController : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        if (_target != null)
+        {
+            InitializeCamera(_target);
+        }
+    }
+
     private void Update()
     {
         if (_target != null)
         {
-            HandleInput();
             ManageCamera();
         }
     }
@@ -64,23 +69,11 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    private void HandleInput()
-    {
-        if (Input.GetMouseButton(0))
-        {
-            float mouseX = Input.GetAxis("Mouse X");
-            _rotationX += mouseX * _rotationSpeed;
-        }
-
-        _distance = Mathf.Clamp(_distance, _minDistance, _maxDistance);
-    }
-
     private void ManageCamera()
     {
-        Vector3 rotationEuler = new Vector3(0, _rotationX, 0);
-        Quaternion rotation = Quaternion.Euler(rotationEuler);
+        _distance = Mathf.Clamp(_distance, _minDistance, _maxDistance);
 
-        Vector3 desiredPosition = _target.position - rotation * Vector3.forward * _distance;
+        Vector3 desiredPosition = _target.position + _target.forward * _distance;
         float targetCenterY = _target.position.y + (_targetBounds.center.y - _target.position.y);
         desiredPosition.y = targetCenterY;
         Vector3 targetPosition = _target.position;

@@ -94,8 +94,7 @@ public class HomeAssistantController : MonoBehaviour
             return;
         }
 
-        IEnumerable<PanelInfo> entities = await APIController.Instance.Connection.GetPanelsAsync();
-        
+        IEnumerable<PanelInfo> entities = await APIController.Instance.Connection.GetPanelsAsync();        
     }
 
     public void Discover()
