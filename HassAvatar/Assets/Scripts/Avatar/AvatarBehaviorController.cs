@@ -1,12 +1,10 @@
+using System;
 using UnityEngine;
 
 public class AvatarBehaviorController : MonoBehaviour
 {
     #region ATTRIBUTES
     [SerializeField] private Animator _animator;
-    private SimpleTimer _eventTimer;
-    [SerializeField] private float _timeBetweenEvents;
-    [SerializeField] private bool _idle;
     #endregion
 
     #region PROPERTIES
@@ -23,28 +21,20 @@ public class AvatarBehaviorController : MonoBehaviour
         }
 
         Instance = this;
-        _idle = true;
     }
 
     private void Start()
     {
         EventController.Instance.OnDomainEvent += Handle_OnDomainEvent;
-        _eventTimer = new SimpleTimer(_timeBetweenEvents);
-        _idle = true;
     }
 
     private void Update()
     {
-        _eventTimer.Update(Time.deltaTime);
+
     }
     #endregion
 
     #region METHODS
-    private void CreateTimers()
-    {
-        _eventTimer = new SimpleTimer(_timeBetweenEvents);
-        _eventTimer.OnTimeReached += Handle_OnTimeReached;
-    }
     #endregion
 
     #region CALLBACKS
@@ -52,18 +42,18 @@ public class AvatarBehaviorController : MonoBehaviour
     {
         MainThreadDispatcher.Instance.Enqueue(() =>
         {
-            if (_idle && _animator != null)
+            try
             {
-                _idle = false;
-                _eventTimer.Restart();
-                _animator.SetTrigger("OnLight");
+                if (_animator != null)
+                {
+                    _animator.SetTrigger("OnLight");
+                }
+            }
+            catch (Exception ex)
+            {
+                string t = ex.GetBaseException().Message;
             }
         });
-    }
-
-    private void Handle_OnTimeReached()
-    {
-        _idle = true;
     }
     #endregion
 }

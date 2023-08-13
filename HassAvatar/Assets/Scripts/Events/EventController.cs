@@ -1,16 +1,21 @@
 using HassClient.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class EventController : MonoBehaviour
 {
     #region ATTRIBUTES
+    [SerializeField] private float _lifeTime;
     private HashSet<string> _listeningDomains;
+    [SerializeField] public List<EventEntry> Events;
+    private object eventsLock = new object();
     #endregion
 
     #region PROPERTIES
-
     public static EventController Instance { get; private set; }
     #endregion
 
@@ -30,11 +35,19 @@ public class EventController : MonoBehaviour
         }
 
         Instance = this;
+
+        Events = new List<EventEntry>();
     }
 
     private void Update()
     {
         CheckRegisteredDomains();
+        ManageEventEntries();
+    }
+
+    private void OnDisable()
+    {
+        Events.Clear();
     }
     #endregion
 
@@ -59,8 +72,28 @@ public class EventController : MonoBehaviour
         }
     }
 
+    private void ManageEventEntries()
+    {
+        lock (eventsLock)
+        {
+            if (Events != null && Events.Count > 0)
+            {
+                Events.RemoveAll(x => x.Time < DateTime.Now - TimeSpan.FromSeconds(_lifeTime));
+            }
+        }
+    }
+
     private void Handle_StateChanged(object sender, StateChangedEvent stateChangedArgs)
     {
+        Events.Add(new EventEntry
+        {
+            Time = DateTime.Now,
+            Domain = stateChangedArgs.Domain,
+            EntityID = stateChangedArgs.EntityId,
+            NewState = stateChangedArgs.NewState.State,
+            OldState = stateChangedArgs.OldState.State
+        });
+
         OnDomainEvent?.Invoke(new EventControllerArgs
         {
             Domain = stateChangedArgs.Domain,

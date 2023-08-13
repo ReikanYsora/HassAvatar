@@ -32,10 +32,6 @@ public class CameraController : MonoBehaviour
     #endregion
 
     #region METHODS
-    private float CustomClamp(float value, float min, float max, float margin)
-    {
-        return Mathf.Clamp(value, min + margin, max - margin);
-    }
 
     private void HandleInput()
     {
@@ -45,7 +41,7 @@ public class CameraController : MonoBehaviour
             _rotationX += mouseX * _rotationSpeed;
         }
 
-        _distance = CustomClamp(_distance, _minDistance, _maxDistance, 0.1f);
+        _distance = Mathf.Clamp(_distance, _minDistance, _maxDistance);
     }
 
     private void CalculateTargetBounds()
