@@ -1024,7 +1024,7 @@ GameObject:
   - component: {fileID: 1330877216}
   - component: {fileID: 1330877217}
   m_Layer: 0
-  m_Name: APIController
+  m_Name: WebSocketController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1057,6 +1057,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe7a2e8293f256a408d7a596e6f515e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DistantUTL: https://zy0dbiq9io70u5rrfxqk0g10jiryuzsb.ui.nabu.casa/
   HomeAssistantURL: http://192.168.1.2:8123
   Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhYWFmNWMyZGFlM2U0MGQ5OGQzY2U2Y2JkY2Q5OTk4MCIsImlhdCI6MTY5MTc3MTczMSwiZXhwIjoyMDA3MTMxNzMxfQ.bZWKR9t256dMGBlQ6PSCetcKycBpCdI864TTUnbtTek
 --- !u!1 &1334457948

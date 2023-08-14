@@ -1,41 +1,36 @@
 using HassClient.WS;
 using System;
 using System.Threading.Tasks;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 
-public class APIController : MonoBehaviour
+public class WebSocketController : MonoBehaviour
 {
+    public string DistantUTL = "https://zy0dbiq9io70u5rrfxqk0g10jiryuzsb.ui.nabu.casa/";
     public string HomeAssistantURL = "http://192.168.1.2:8123";
     public string Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhYWFmNWMyZGFlM2U0MGQ5OGQzY2U2Y2JkY2Q5OTk4MCIsImlhdCI6MTY5MTc3MTczMSwiZXhwIjoyMDA3MTMxNzMxfQ.bZWKR9t256dMGBlQ6PSCetcKycBpCdI864TTUnbtTek";
-
-    #region ATTRIBUTES
-    private bool _isConnected;
-    #endregion
 
     #region PROPERTIES
     public HassWSApi Connection { private set; get; }
 
-    public static APIController Instance { get; private set; }
+    public static WebSocketController Instance { get; private set; }
 
-    public bool IsConnected
+    public ConnectionStates ConnectionState
     {
-        set
-        {
-            if (_isConnected != value)
-            {
-                _isConnected = value;
-                OnConnectionChanged?.Invoke(_isConnected);
-            }
-        }
         get
         {
-            return _isConnected;
+            if (Connection == null)
+            {
+                return ConnectionStates.Disconnected;
+            }
+
+            return Connection.ConnectionState;
         }
     }
     #endregion
 
     #region EVENTS
-    public event Action<bool> OnConnectionChanged;
+    public event Action<ConnectionStates> OnConnectionChanged;
     #endregion
 
     #region UNITY METHODS
@@ -69,14 +64,19 @@ public class APIController : MonoBehaviour
         try
         {
             Connection = new HassWSApi();
-            var connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(HomeAssistantURL, Token);
+            Connection.ConnectionStateChanged += Handle_ConnectionStateChanged;
+            var connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(DistantUTL, Token);
             await Connection.ConnectAsync(connectionParameters);
-            IsConnected = true;
         }
         catch (Exception)
         {
-            IsConnected = false;
+
         }
+    }
+
+    private void Handle_ConnectionStateChanged(object sender, ConnectionStates state)
+    {
+        OnConnectionChanged?.Invoke(state);
     }
 
     private async Task DisconnectAsync()
@@ -87,7 +87,7 @@ public class APIController : MonoBehaviour
         }
         catch (Exception)
         {
-            IsConnected = false;
+
         }
     }
     #endregion

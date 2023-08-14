@@ -1,3 +1,4 @@
+using HassClient.WS;
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -36,12 +37,12 @@ public class AvatarBehaviorController : MonoBehaviour
 
     private void Start()
     {
-        APIController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
+        WebSocketController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
     }
 
-    private void Handle_OnConnectionChanged(bool connected)
+    private void Handle_OnConnectionChanged(ConnectionStates connectionState)
     {
-        if (connected)
+        if (connectionState == ConnectionStates.Connected)
         {
             if (_animator != null)
             {

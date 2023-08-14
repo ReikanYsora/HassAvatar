@@ -1,4 +1,5 @@
 using HassClient.Models;
+using HassClient.WS;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,19 +52,19 @@ public class EventController : MonoBehaviour
     #region METHODS
     private void CheckRegisteredDomains()
     {
-        if (APIController.Instance.IsConnected)
+        if (WebSocketController.Instance.ConnectionState == ConnectionStates.Connected)
         {
             foreach (Domain tempDomain in HomeAssistantController.Instance.Domains)
             {
                 if (tempDomain.Listening && !_listeningDomains.Contains(tempDomain.Name))
                 {
                     _listeningDomains.Add(tempDomain.Name);
-                    APIController.Instance.Connection.StateChagedEventListener.SubscribeDomainStatusChanged(tempDomain.Name, Handle_StateChanged);
+                    WebSocketController.Instance.Connection.StateChagedEventListener.SubscribeDomainStatusChanged(tempDomain.Name, Handle_StateChanged);
                 }
                 else if (!tempDomain.Listening && _listeningDomains.Contains(tempDomain.Name))
                 {
                     _listeningDomains.Remove(tempDomain.Name);
-                    APIController.Instance.Connection.StateChagedEventListener.UnsubscribeDomainStatusChanged(tempDomain.Name, Handle_StateChanged);
+                    WebSocketController.Instance.Connection.StateChagedEventListener.UnsubscribeDomainStatusChanged(tempDomain.Name, Handle_StateChanged);
                 }
             }
         }

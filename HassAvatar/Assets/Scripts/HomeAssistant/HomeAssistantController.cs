@@ -1,4 +1,5 @@
 using HassClient.Models;
+using HassClient.WS;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,30 +33,30 @@ public class HomeAssistantController : MonoBehaviour
 
     private void Start()
     {
-        APIController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
+        WebSocketController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
     }
     #endregion
 
     #region METHODS
     private async void DiscoverEntitiesAsync()
     {
-        if (!APIController.Instance.IsConnected)
+        if (WebSocketController.Instance.ConnectionState != ConnectionStates.Connected)
         {
             return;
         }
 
-        IEnumerable<EntityRegistryEntry> entities = await APIController.Instance.Connection.GetEntitiesAsync();
+        IEnumerable<EntityRegistryEntry> entities = await WebSocketController.Instance.Connection.GetEntitiesAsync();
     }
 
     private async void DiscoverAreasAsync()
     {
-        if (!APIController.Instance.IsConnected)
+        if (WebSocketController.Instance.ConnectionState != ConnectionStates.Connected)
         {
             return;
         }
 
         Areas = new List<Area>();
-        IEnumerable<HassClient.Models.Area> tempAreas = await APIController.Instance.Connection.GetAreasAsync();
+        IEnumerable<HassClient.Models.Area> tempAreas = await WebSocketController.Instance.Connection.GetAreasAsync();
 
         foreach (HassClient.Models.Area tempArea in tempAreas)
         {
@@ -69,12 +70,12 @@ public class HomeAssistantController : MonoBehaviour
 
     private async void DiscoverDomainsAsync()
     {
-        if (!APIController.Instance.IsConnected)
+        if (WebSocketController.Instance.ConnectionState != ConnectionStates.Connected)
         {
             return;
         }
 
-        IEnumerable<EntityRegistryEntry> entities = await APIController.Instance.Connection.GetEntitiesAsync();
+        IEnumerable<EntityRegistryEntry> entities = await WebSocketController.Instance.Connection.GetEntitiesAsync();
         HashSet<string> tempDomains = entities.Select(x => x.Domain).ToHashSet();
 
         foreach (string domain in tempDomains)
@@ -89,12 +90,12 @@ public class HomeAssistantController : MonoBehaviour
 
     private async void DiscoverPanelsAsync()
     {
-        if (!APIController.Instance.IsConnected)
+        if (WebSocketController.Instance.ConnectionState != ConnectionStates.Connected)
         {
             return;
         }
 
-        IEnumerable<PanelInfo> entities = await APIController.Instance.Connection.GetPanelsAsync();        
+        IEnumerable<PanelInfo> entities = await WebSocketController.Instance.Connection.GetPanelsAsync();        
     }
 
     public void Discover()
@@ -107,11 +108,22 @@ public class HomeAssistantController : MonoBehaviour
     #endregion
 
     #region CALLBACKS
-    private void Handle_OnConnectionChanged(bool connectionState)
+    private void Handle_OnConnectionChanged(ConnectionStates connectionState)
     {
-        if (connectionState)
+        switch (connectionState)
         {
-            Discover();
+            default:
+            case ConnectionStates.Disconnected:
+                break;
+            case ConnectionStates.Connecting:
+                break;
+            case ConnectionStates.Authenticating:
+                break;
+            case ConnectionStates.Restoring:
+                break;
+            case ConnectionStates.Connected:
+                Discover();
+                break;
         }
     }
     #endregion

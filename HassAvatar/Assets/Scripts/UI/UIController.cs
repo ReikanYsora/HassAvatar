@@ -1,3 +1,4 @@
+using HassClient.WS;
 using UnityEngine;
 
 public class UIController : MonoBehaviour
@@ -24,12 +25,12 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
-        APIController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
+        WebSocketController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
     }
 
-    private void Handle_OnConnectionChanged(bool connected)
+    private void Handle_OnConnectionChanged(ConnectionStates connectionState)
     {
-        if (connected)
+        if (connectionState == ConnectionStates.Connected)
         {
             _connectionPanel.gameObject.SetActive(false);
         }
@@ -39,7 +40,7 @@ public class UIController : MonoBehaviour
     #region METHODS
     public void StartConnection()
     {
-        APIController.Instance.StartConnection();
+        WebSocketController.Instance.StartConnection();
     }
     #endregion
 }
