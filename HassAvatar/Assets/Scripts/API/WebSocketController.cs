@@ -1,8 +1,6 @@
 using HassClient.WS;
 using System;
-using System.Security;
 using System.Threading.Tasks;
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
 
 public class WebSocketController : MonoBehaviour

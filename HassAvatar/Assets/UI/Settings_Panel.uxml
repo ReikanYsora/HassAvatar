@@ -1,6 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement name="MainContainer" style="flex-grow: 1; flex-direction: row; flex-shrink: 1; height: auto; width: auto;">
-        <ui:ListView focusable="true" name="LeftPanel" show-foldout-header="false" show-bound-collection-size="false" style="flex-direction: row; flex-grow: 1; background-color: rgb(3, 169, 244); border-right-width: 0; border-right-color: rgba(0, 0, 0, 0);" />
-        <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="RightPanel" style="flex-grow: 4; background-color: rgb(255, 255, 255);" />
-    </ui:VisualElement>
-</ui:UXML>

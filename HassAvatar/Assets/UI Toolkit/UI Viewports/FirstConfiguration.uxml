@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/VisualElementStyleSheet.uss?fileID=7433441132597879392&amp;guid=f7489cebac578cb4486a46fc1ed3ed1d&amp;type=3#VisualElementStyleSheet" />
+    <ui:VisualElement name="ConfigurationPanel" style="flex-grow: 1;">
+        <ui:VisualElement name="AppTitlePanel" class="visualElement" style="flex-grow: 0; height: 40%; align-self: stretch; justify-content: space-around; padding-top: 81px; padding-right: 81px; padding-bottom: 81px; padding-left: 81px;">
+            <ui:VisualElement name="AppLogoContainer" style="flex-grow: 1; background-color: rgba(255, 255, 255, 0); align-items: center; justify-content: flex-start; align-self: stretch; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; background-image: none; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; -unity-background-scale-mode: scale-to-fit; display: flex;">
+                <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: space-around; align-self: center; width: 50%; height: 50%; background-image: resource(&apos;Images/Hass Avatar Logo&apos;); -unity-background-scale-mode: scale-to-fit;" />
+            </ui:VisualElement>
+            <ui:Label tabindex="-1" text="Home Assistant Avatar" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AppName" style="-unity-text-align: upper-center; -unity-font-style: bold; font-size: 16px;" />
+            <ui:Label tabindex="-1" text="1.0.0" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AppVersion" style="-unity-text-align: upper-center; font-size: 10px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="MainSettingsPanel" style="flex-grow: 1; height: 40%; padding-top: 10%; padding-right: 10%; padding-bottom: 10%; padding-left: 10%; flex-direction: column; -unity-text-align: middle-left; justify-content: center; background-color: rgb(3, 169, 244); border-top-width: 0; align-self: stretch;">
+            <ui:TextField picking-mode="Ignore" label="Home Assistant URL" name="URLField" keyboard-type="URL" class="textElement unity-text-element" style="min-width: auto; flex-direction: column; justify-content: center; align-self: stretch; align-items: center; min-height: auto;" />
+            <ui:TextField picking-mode="Ignore" label="API Token" name="TokenField" keyboard-type="ASCIICapable" class="textElement" style="flex-direction: column; align-items: center; align-self: stretch; -unity-text-align: upper-center; min-width: auto; justify-content: center;" />
+            <ui:TextField picking-mode="Ignore" label="Avatar name" name="AvatarNameField" style="flex-direction: column; align-items: center; align-self: stretch; -unity-text-align: middle-center; justify-content: center;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ButtonPanel" style="flex-grow: 1; background-color: rgb(255, 255, 255); padding-top: 10%; padding-right: 10%; padding-bottom: 10%; padding-left: 10%; justify-content: center; align-self: stretch; height: 20%;">
+            <ui:Button text="CONNECTION" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ConnectionButton" style="margin-top: 2px; justify-content: center; align-self: stretch; text-overflow: ellipsis; transition-property: all; transition-duration: 0s; transition-timing-function: ease; transition-delay: 0s; overflow: hidden; display: flex; opacity: 1; -unity-font-style: bold;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

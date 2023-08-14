@@ -1,0 +1,40 @@
+.visualElement {
+    background-color: rgb(255, 255, 255);
+}
+
+.unity-text-field {
+}
+
+.unity-button {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    background-color: rgb(3, 169, 244);
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    justify-content: center;
+    align-self: center;
+}
+
+.unity-base-text-field__input {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-left-color: rgb(3, 169, 244);
+    border-right-color: rgb(3, 169, 244);
+    border-top-color: rgb(3, 169, 244);
+    border-bottom-color: rgb(3, 169, 244);
+    justify-content: center;
+    align-self: center;
+}
+
+.unity-text-element {
+    -unity-font: resource('Fonts/Symtext');
+}
