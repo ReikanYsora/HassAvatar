@@ -42,15 +42,18 @@ public class AvatarBehaviorController : MonoBehaviour
 
     private void Handle_OnConnectionChanged(ConnectionStates connectionState)
     {
-        if (connectionState == ConnectionStates.Connected)
+        MainThreadDispatcher.Instance.Enqueue(() =>
         {
-            if (_animator != null)
+            if (connectionState == ConnectionStates.Connected)
             {
-                Destroy(_avatar);
-            }
+                if (_animator != null)
+                {
+                    Destroy(_avatar);
+                }
 
-            CreateAvatar();
-        }
+                CreateAvatar();
+            }
+        });
     }
 
     private void Update()

@@ -1,0 +1,17 @@
+.button {
+    -unity-font: resource('Fonts/Roboto-Regular');
+    color: rgb(255, 255, 255);
+    background-color: rgb(3, 169, 244);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    justify-content: center;
+    font-size: 100%;
+    width: 50%;
+    height: 50%;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+}

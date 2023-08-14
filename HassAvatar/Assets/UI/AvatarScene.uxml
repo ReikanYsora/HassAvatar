@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/StyleSheet.uss?fileID=7433441132597879392&amp;guid=6bbf24e16845c3644b44b3474a74e3e4&amp;type=3#StyleSheet" />
+    <ui:VisualElement name="MainContainer" style="flex-grow: 1; justify-content: flex-end;">
+        <ui:VisualElement name="BottomContainer" style="flex-grow: 0; flex-basis: 10%; flex-direction: row; justify-content: space-around; align-items: center; background-color: rgb(255, 255, 255);">
+            <ui:Button text="CONNECTION" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ConnectionButton" class="button" style="width: initial;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

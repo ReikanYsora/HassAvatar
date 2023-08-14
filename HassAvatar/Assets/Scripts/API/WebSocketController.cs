@@ -1,5 +1,6 @@
 using HassClient.WS;
 using System;
+using System.Security;
 using System.Threading.Tasks;
 using UnityEditor.MemoryProfiler;
 using UnityEngine;
@@ -68,9 +69,9 @@ public class WebSocketController : MonoBehaviour
             var connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(DistantUTL, Token);
             await Connection.ConnectAsync(connectionParameters);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-
+            string t = ex.Message;
         }
     }
 
