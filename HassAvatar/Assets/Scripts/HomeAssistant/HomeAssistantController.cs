@@ -1,10 +1,8 @@
 using HassClient.Models;
 using HassClient.WS;
-using HassClient.WS.Messages;
 using HomeAssistant.Configuration;
 using HomeAssistant.Data;
 using HomeAssistant.Events;
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,6 +29,7 @@ public class HomeAssistantController : MonoBehaviour
     [SerializeField] private List<HomeAssistantArea> _areas;
     [SerializeField] private List<HomeAssistantDomain> _domains;
     [SerializeField] private List<HomeAssistantPanel> _panels;
+    [SerializeField] private List<HomeAssistantServiceDomain> _serviceDomains;
 
     [Header("Home Assistant events management")]
     [SerializeField] private float _lifeTime;
@@ -137,6 +136,7 @@ public class HomeAssistantController : MonoBehaviour
         await DiscoverAreasAsync();
         await DiscoverDomainsAsync();
         await DiscoverPanelsAsync();
+        await DiscoverServiceDomainsAsync();
     }
 
     private async Task DiscoverEntitiesAsync()
@@ -157,6 +157,7 @@ public class HomeAssistantController : MonoBehaviour
         }
 
         IEnumerable<Area> tempAreas = await _WSApiConnection.GetAreasAsync();
+        _areas.Clear();
 
         foreach (Area tempArea in tempAreas)
         {
@@ -177,6 +178,7 @@ public class HomeAssistantController : MonoBehaviour
 
         IEnumerable<EntityRegistryEntry> entities = await _WSApiConnection.GetEntitiesAsync();
         HashSet<string> tempDomains = entities.Select(x => x.Domain).ToHashSet();
+        _domains.Clear();
 
         foreach (string domain in tempDomains)
         {
@@ -188,6 +190,55 @@ public class HomeAssistantController : MonoBehaviour
         }
     }
 
+    private async Task DiscoverServiceDomainsAsync()
+    {
+        if (_WSApiConnection.ConnectionState != ConnectionStates.Connected)
+        {
+            return;
+        }
+
+        IEnumerable<ServiceDomain> serviceDomains = await _WSApiConnection.GetServicesAsync();
+        _serviceDomains.Clear();
+
+        foreach (ServiceDomain tempServiceDomain in serviceDomains)
+        {
+            HomeAssistantServiceDomain tempDomain = new HomeAssistantServiceDomain
+            {
+                Domain = tempServiceDomain.Domain
+            };
+
+            List<HomeAssistantService> tempDomainServices = new List<HomeAssistantService>();
+
+            foreach (KeyValuePair<string, Service> tempService in tempServiceDomain.Services)
+            {
+                HomeAssistantService tempServiceDefinition = new HomeAssistantService
+                {
+                    Description = tempService.Value.Description,
+                    Name = tempService.Key
+                };
+
+                tempServiceDefinition.Fields = new List<HomeAssistantServiceField>();
+
+                foreach (KeyValuePair<string, ServiceField> tempServiceField in tempService.Value.Fields)
+                {
+                    tempServiceDefinition.Fields.Add(new HomeAssistantServiceField
+                    {
+                        Description = tempServiceField.Value.Description,
+                        Name = tempServiceField.Key,
+                        IsAdvanced = tempServiceField.Value.IsAdvanced,
+                        IsRequired = tempServiceField.Value.IsRequired
+                    });
+                }
+
+                tempDomainServices.Add(tempServiceDefinition);
+            }
+
+            tempDomain.Services = tempDomainServices;
+            _serviceDomains.Add(tempDomain);
+        }
+        //var t = await _WSApiConnection.CallServiceAsync("conversation", "process", new { text = "Eteint la lumière de la mezzanine" });
+    }
+
     private async Task DiscoverPanelsAsync()
     {
         if (_WSApiConnection.ConnectionState != ConnectionStates.Connected)
@@ -196,6 +247,7 @@ public class HomeAssistantController : MonoBehaviour
         }
 
         IEnumerable<PanelInfo> tempPanelInfos = await _WSApiConnection.GetPanelsAsync();
+        _panels.Clear();
 
         foreach (PanelInfo panelInfo in tempPanelInfos)
         {
