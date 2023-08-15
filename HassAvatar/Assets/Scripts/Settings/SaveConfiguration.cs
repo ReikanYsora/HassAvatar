@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 
-[Serializable]
-public class SaveConfiguration
+namespace HomeAssistant.Configuration
 {
-    public List<HomeAssistantServerSettings> Servers;
-
-    public SaveConfiguration()
+    [Serializable]
+    public class SaveConfiguration
     {
-        Servers = new List<HomeAssistantServerSettings>();
+        public List<HomeAssistantServerSettings> Servers;
+
+        public SaveConfiguration()
+        {
+            Servers = new List<HomeAssistantServerSettings>();
+        }
     }
 }

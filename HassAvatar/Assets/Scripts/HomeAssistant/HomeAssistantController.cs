@@ -1,14 +1,22 @@
 using HassClient.Models;
 using HassClient.WS;
+using HomeAssistant.Configuration;
+using HomeAssistant.Data;
+using HomeAssistant.Events;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
 public class HomeAssistantController : MonoBehaviour
 {
+    #region CONSTANTS
+    private const string HASS_AVATAR_CONFIGURATIONS = "HASS_Avatar_Configurations";
+    #endregion
+
     #region ATTRIBUTES
     private HassWSApi _WSApiConnection;
 
@@ -18,8 +26,9 @@ public class HomeAssistantController : MonoBehaviour
     [SerializeField] private bool _serverSettingsInitialized;
 
     [Header("Home Assistant elements")]
-    [SerializeField] private List<Area> _areas;
-    [SerializeField] private List<Domain> _domains;
+    [SerializeField] private List<HomeAssistantArea> _areas;
+    [SerializeField] private List<HomeAssistantDomain> _domains;
+    [SerializeField] private List<HomeAssistantPanel> _panels;
 
     [Header("Home Assistant events management")]
     [SerializeField] private float _lifeTime;
@@ -48,7 +57,7 @@ public class HomeAssistantController : MonoBehaviour
         Instance = this;
 
         //Get configuration
-        SaveConfiguration configuration = ConfigurationController.LoadConfiguration();
+        SaveConfiguration configuration = LoadConfiguration();
         _servers = configuration.Servers;
 
         if (_servers != null && _servers.Count > 0)
@@ -62,8 +71,9 @@ public class HomeAssistantController : MonoBehaviour
         _WSApiConnection.ConnectionStateChanged += Handle_ConnectionStateChanged;
 
         //Prepare baked data
-        _areas = new List<Area>();
-        _domains = new List<Domain>();
+        _areas = new List<HomeAssistantArea>();
+        _domains = new List<HomeAssistantDomain>();
+        _panels = new List<HomeAssistantPanel>();
 
         //Prepare event listening
         _events = new List<HomeAssistantEventEntry>();
@@ -77,8 +87,12 @@ public class HomeAssistantController : MonoBehaviour
 
     private async void OnDisable()
     {
-        _events.Clear();
         await DisconnectAsync();
+
+        _areas.Clear();
+        _domains.Clear();
+        _panels.Clear();
+        _events.Clear();
     }
     #endregion
 
@@ -140,12 +154,11 @@ public class HomeAssistantController : MonoBehaviour
             return;
         }
 
-        _areas = new List<Area>();
-        IEnumerable<HassClient.Models.Area> tempAreas = await _WSApiConnection.GetAreasAsync();
+        IEnumerable<Area> tempAreas = await _WSApiConnection.GetAreasAsync();
 
-        foreach (HassClient.Models.Area tempArea in tempAreas)
+        foreach (Area tempArea in tempAreas)
         {
-            _areas.Add(new Area
+            _areas.Add(new HomeAssistantArea
             {
                 ID = tempArea.Id,
                 Name = tempArea.Name
@@ -165,7 +178,7 @@ public class HomeAssistantController : MonoBehaviour
 
         foreach (string domain in tempDomains)
         {
-            _domains.Add(new Domain
+            _domains.Add(new HomeAssistantDomain
             {
                 Name = domain,
                 Listening = false
@@ -180,7 +193,42 @@ public class HomeAssistantController : MonoBehaviour
             return;
         }
 
-        IEnumerable<PanelInfo> entities = await _WSApiConnection.GetPanelsAsync();
+        IEnumerable<PanelInfo> tempPanelInfos = await _WSApiConnection.GetPanelsAsync();
+
+        foreach (PanelInfo panelInfo in tempPanelInfos)
+        {
+            _panels.Add(new HomeAssistantPanel
+            {
+                Name = panelInfo.Title,
+                URL = panelInfo.UrlPath,
+                Icon = panelInfo.Icon
+            });
+        }
+    }
+    #endregion
+
+    #region CONFIGURATION MANAGEMENT
+    public static void SaveConfiguration(SaveConfiguration settings)
+    {
+        string json = JsonUtility.ToJson(settings);
+        byte[] bytes = Encoding.UTF8.GetBytes(json);
+        PlayerPrefs.SetString(HASS_AVATAR_CONFIGURATIONS, Convert.ToBase64String(bytes));
+        PlayerPrefs.Save();
+    }
+
+    public static SaveConfiguration LoadConfiguration()
+    {
+        if (PlayerPrefs.HasKey(HASS_AVATAR_CONFIGURATIONS))
+        {
+            string base64 = PlayerPrefs.GetString(HASS_AVATAR_CONFIGURATIONS);
+            byte[] bytes = Convert.FromBase64String(base64);
+            string json = Encoding.UTF8.GetString(bytes);
+            return JsonUtility.FromJson<SaveConfiguration>(json);
+        }
+        else
+        {
+            return new SaveConfiguration();
+        }
     }
     #endregion
 
@@ -189,7 +237,7 @@ public class HomeAssistantController : MonoBehaviour
     {
         if (_WSApiConnection.ConnectionState == ConnectionStates.Connected)
         {
-            foreach (Domain tempDomain in _domains)
+            foreach (HomeAssistantDomain tempDomain in _domains)
             {
                 if (_selectedServer.EnabledDomains.Contains(tempDomain.Name))
                 {
@@ -203,7 +251,7 @@ public class HomeAssistantController : MonoBehaviour
     {
         if (_WSApiConnection.ConnectionState == ConnectionStates.Connected)
         {
-            foreach (Domain tempDomain in _domains)
+            foreach (HomeAssistantDomain tempDomain in _domains)
             {
                 _WSApiConnection.StateChagedEventListener.UnsubscribeDomainStatusChanged(tempDomain.Name, Handle_StateChanged);
             }
