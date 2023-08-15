@@ -37,7 +37,7 @@ public class AvatarBehaviorController : MonoBehaviour
 
     private void Start()
     {
-        WebSocketController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
+        HomeAssistantController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
     }
 
     private void Handle_OnConnectionChanged(ConnectionStates connectionState)
@@ -85,13 +85,13 @@ public class AvatarBehaviorController : MonoBehaviour
             CameraController.Instance.InitializeCamera(_avatar.transform);
 
             //Subscribe events for trigger animations
-            EventController.Instance.OnDomainEvent += Handle_OnDomainEvent;
+            HomeAssistantController.Instance.OnDomainEvent += Handle_OnDomainEvent;
         }
     }
     #endregion
 
     #region CALLBACKS
-    private void Handle_OnDomainEvent(EventControllerArgs obj)
+    private void Handle_OnDomainEvent(HomeAssistantEventArgs obj)
     {
         MainThreadDispatcher.Instance.Enqueue(() =>
         {

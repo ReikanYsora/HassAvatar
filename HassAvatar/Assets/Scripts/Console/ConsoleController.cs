@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -34,12 +30,12 @@ public class ConsoleController : MonoBehaviour
 
     private void Start()
     {
-        EventController.Instance.OnDomainEvent += Handle_OnDomainEvent;
+        HomeAssistantController.Instance.OnDomainEvent += Handle_OnDomainEvent;
     }
     #endregion
 
     #region CALLBACKS
-    private void Handle_OnDomainEvent(EventControllerArgs obj)
+    private void Handle_OnDomainEvent(HomeAssistantEventArgs obj)
     {
         MainThreadDispatcher.Instance.Enqueue(() =>
         {

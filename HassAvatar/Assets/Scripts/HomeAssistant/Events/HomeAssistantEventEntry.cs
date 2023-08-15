@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public class EventEntry
+public class HomeAssistantEventEntry
 {
 	#region PROPERTIES
 	public DateTime Time;

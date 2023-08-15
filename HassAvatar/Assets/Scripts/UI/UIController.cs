@@ -27,7 +27,7 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
-        WebSocketController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
+        HomeAssistantController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
     }
 
     private void OnEnable()
@@ -42,9 +42,9 @@ public class UIController : MonoBehaviour
     #endregion
 
     #region METHODS
-    public void StartConnection()
+    public async void StartConnection()
     {
-        WebSocketController.Instance.StartConnection();
+        await HomeAssistantController.Instance.ConnectAsync();
     }
     #endregion
 

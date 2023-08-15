@@ -1,6 +1,6 @@
 using System;
 
-public class EventControllerArgs : EventArgs
+public class HomeAssistantEventArgs : EventArgs
 {
     #region PROPERTIES
     public string Domain { set; get; }
