@@ -1,8 +1,10 @@
 using HassClient.Models;
 using HassClient.WS;
+using HassClient.WS.Messages;
 using HomeAssistant.Configuration;
 using HomeAssistant.Data;
 using HomeAssistant.Events;
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Data;
