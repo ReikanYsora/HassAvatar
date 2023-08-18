@@ -1,10 +1,11 @@
+using Assets.Scripts.HomeAssistant.Data;
 using HassClient.Models;
 using HassClient.WS;
 using HassClient.WS.Messages;
 using HomeAssistant.Configuration;
 using HomeAssistant.Data;
 using HomeAssistant.Events;
-using JetBrains.Annotations;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,6 +32,7 @@ public class HomeAssistantController : MonoBehaviour
     [SerializeField] private List<HomeAssistantArea> _areas;
     [SerializeField] private List<HomeAssistantDomain> _domains;
     [SerializeField] private List<HomeAssistantPanel> _panels;
+    [SerializeField] private HomeAssistantPipelineList _pipelines;
 
     [Header("Home Assistant events management")]
     [SerializeField] private float _lifeTime;
@@ -40,6 +42,7 @@ public class HomeAssistantController : MonoBehaviour
 
     #region EVENTS
     public event Action<ConnectionStates> OnConnectionChanged;
+    public event Action<string> OnTTSAudioReceived;
     public event Action<HomeAssistantEventArgs> OnDomainEvent;
     #endregion
 
@@ -109,7 +112,7 @@ public class HomeAssistantController : MonoBehaviour
 
         try
         {
-            var connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(_selectedServer.URL, _selectedServer.Token);
+            var connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl("http://192.168.1.2:8123/", _selectedServer.Token);
             await _WSApiConnection.ConnectAsync(connectionParameters);
         }
         catch (Exception ex)
@@ -137,6 +140,7 @@ public class HomeAssistantController : MonoBehaviour
         await DiscoverAreasAsync();
         await DiscoverDomainsAsync();
         await DiscoverPanelsAsync();
+        await DiscoverPipelinesAsync();
     }
 
     private async Task DiscoverEntitiesAsync()
@@ -205,6 +209,74 @@ public class HomeAssistantController : MonoBehaviour
                 URL = panelInfo.UrlPath,
                 Icon = panelInfo.Icon
             });
+        }
+    }
+
+    private async Task DiscoverPipelinesAsync()
+    {
+        if (_WSApiConnection.ConnectionState != ConnectionStates.Connected)
+        {
+            return;
+        }
+
+        PipelineList pipelineList = await _WSApiConnection.GetPipelinesListAsync();
+
+        List<HomeAssistantPipelineInfo> PipelinesInfos = new List<HomeAssistantPipelineInfo>();
+
+        foreach (PipelineInfo _tempPipelineInfo in pipelineList.Pipelines)
+        {
+            PipelinesInfos.Add(new HomeAssistantPipelineInfo
+            {
+                ConversationEngine = _tempPipelineInfo.ConversationEngine,
+                ConversationLanguage = _tempPipelineInfo.ConversationLanguage,
+                ID = _tempPipelineInfo.ID,
+                Language = _tempPipelineInfo.Language,
+                Name = _tempPipelineInfo.Name,
+                STTEngine = _tempPipelineInfo.STTEngine,
+                STTLanguage = _tempPipelineInfo.STTLanguage,
+                TTSEngine = _tempPipelineInfo.TTSEngine,
+                TTSLanguage = _tempPipelineInfo.TTSLanguage,
+                TTSVoice = _tempPipelineInfo.TTSVoice
+            });
+        }
+
+        _pipelines = new HomeAssistantPipelineList
+        {
+            PreferredPipeline = pipelineList.PreferredPipeline,
+            Pipelines = PipelinesInfos
+        };
+    }
+
+    public async Task RunIntentPipeline(string text)
+    {
+        if (_WSApiConnection.ConnectionState != ConnectionStates.Connected)
+        {
+            return;
+        }
+
+        IEnumerable<PipelineEventResultInfo> result = await _WSApiConnection.RunIntentPipeline(HassClient.StageTypes.TTS, text);
+        PipelineEventResultInfo ttsEnd = result.Where(x => x.KnownType == KnownPipelineEventTypes.TTSEnd).FirstOrDefault();
+
+        if (ttsEnd != null)
+        {
+            try
+            {
+                HomeAssistantPipelineTTSOutput tempJson = JsonConvert.DeserializeObject<HomeAssistantPipelineTTSOutput>((string)ttsEnd.Data);
+
+                if (!string.IsNullOrEmpty(tempJson.tts_output.url))
+                {
+                    Debug.Log("EVENT : TTS Received " + result.Count());
+                    OnTTSAudioReceived?.Invoke(_selectedServer.URL + tempJson.tts_output.url);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("EVENT : TTS Received with errors " + e.GetBaseException().Message + " - " + result.Count());
+            }
+        }
+        else
+        {
+            Debug.Log("EVENT : TTS Received with no data " + result.Count());
         }
     }
     #endregion

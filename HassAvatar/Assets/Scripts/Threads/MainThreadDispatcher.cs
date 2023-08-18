@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 public class MainThreadDispatcher : MonoBehaviour
 {
     #region ATTRIBUTES
-    private static readonly Queue<Action> _executionQueue = new Queue<Action>();
+    [SerializeField] private static readonly Queue<Action> _executionQueue = new Queue<Action>();
     #endregion
 
     #region PROPERTIES

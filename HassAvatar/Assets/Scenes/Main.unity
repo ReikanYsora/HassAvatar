@@ -158,6 +158,56 @@ Transform:
   - {fileID: 1858803853}
   - {fileID: 1121400082}
   - {fileID: 1815277346}
+  - {fileID: 1605255691}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &266364913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 266364915}
+  - component: {fileID: 266364914}
+  m_Layer: 0
+  m_Name: Test
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &266364914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266364913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0636cb7b23e558543b51d037c4427aa7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _intents:
+  - "Eteint la lumi\xE8re de la mezzanine"
+  - "Allume la lumi\xE8re de la mezzanine"
+  _currentIndex: 0
+  _delay: 10
+--- !u!4 &266364915
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266364913}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 554.33984, y: 848.1987, z: -217.45453}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &278834486
@@ -946,9 +996,14 @@ MonoBehaviour:
     URL: 
     Token: 
     AvatarName: 
+    EnabledDomains: []
   _serverSettingsInitialized: 0
-  Areas: []
-  Domains: []
+  _areas: []
+  _domains: []
+  _panels: []
+  _pipelines:
+    Pipelines: []
+    PreferredPipeline: 
   _lifeTime: 60
   _events: []
 --- !u!1 &1475699807
@@ -1000,6 +1055,52 @@ MonoBehaviour:
   _avatars:
   - {fileID: 3612397688809832879, guid: 9c7b6db807b1d5b4fbe1d2f1c9306044, type: 3}
   _spawnPosition: {fileID: 278834487}
+--- !u!1 &1605255690
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1605255691}
+  - component: {fileID: 1605255692}
+  m_Layer: 0
+  m_Name: AudioController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1605255691
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605255690}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 195062924}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1605255692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605255690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35893d69559087249a5b298dcfc56902, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  webAudioSourcePrefab: {fileID: 3964582366592030473, guid: 37a312a9e6165104b9b379dbcda6edcc,
+    type: 3}
 --- !u!1 &1815277345
 GameObject:
   m_ObjectHideFlags: 0
@@ -1083,3 +1184,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 195062924}
   - {fileID: 1265612823}
+  - {fileID: 266364915}

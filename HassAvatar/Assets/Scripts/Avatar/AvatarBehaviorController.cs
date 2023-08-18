@@ -1,7 +1,6 @@
 using HassClient.WS;
 using System;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class AvatarBehaviorController : MonoBehaviour
 {
@@ -38,22 +37,6 @@ public class AvatarBehaviorController : MonoBehaviour
     private void Start()
     {
         HomeAssistantController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
-    }
-
-    private void Handle_OnConnectionChanged(ConnectionStates connectionState)
-    {
-        MainThreadDispatcher.Instance.Enqueue(() =>
-        {
-            if (connectionState == ConnectionStates.Connected)
-            {
-                if (_animator != null)
-                {
-                    Destroy(_avatar);
-                }
-
-                CreateAvatar();
-            }
-        });
     }
 
     private void Update()
@@ -105,6 +88,22 @@ public class AvatarBehaviorController : MonoBehaviour
             catch (Exception ex)
             {
                 string t = ex.GetBaseException().Message;
+            }
+        });
+    }
+
+    private void Handle_OnConnectionChanged(ConnectionStates connectionState)
+    {
+        MainThreadDispatcher.Instance.Enqueue(() =>
+        {
+            if (connectionState == ConnectionStates.Connected)
+            {
+                if (_animator != null)
+                {
+                    Destroy(_avatar);
+                }
+
+                CreateAvatar();
             }
         });
     }
