@@ -38,6 +38,13 @@ public class UIController : MonoBehaviour
         _bottomContainer = root.Q<VisualElement>("BottomContainer");
         _connectionButton.clicked += () => StartConnection();
     }
+    private void OnDisable()
+    {
+        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+
+        _connectionButton = root.Q<Button>("ConnectionButton");
+        _connectionButton.clicked -= () => StartConnection();
+    }
 
     #endregion
 
