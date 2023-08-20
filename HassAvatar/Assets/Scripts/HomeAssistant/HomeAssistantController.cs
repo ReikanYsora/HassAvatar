@@ -112,7 +112,7 @@ public class HomeAssistantController : MonoBehaviour
 
         try
         {
-            var connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl("http://192.168.1.2:8123/", _selectedServer.Token);
+            var connectionParameters = ConnectionParameters.CreateFromInstanceBaseUrl(_selectedServer.URL, _selectedServer.Token);
             await _WSApiConnection.ConnectAsync(connectionParameters);
         }
         catch (Exception ex)
