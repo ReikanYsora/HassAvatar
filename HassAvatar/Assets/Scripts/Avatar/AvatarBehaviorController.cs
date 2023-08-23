@@ -1,24 +1,26 @@
 using HassClient.WS;
+using DG.Tweening;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class AvatarBehaviorController : MonoBehaviour
 {
     #region ATTRIBUTES
-    [Header("Avatar selection")]
-    [SerializeField] private int _selectedAvatar;
-    [SerializeField] private GameObject[] _avatars;
-    private GameObject _avatar;
-
-    [Header("Avatar creation attributes")]
-    [SerializeField] private Transform _spawnPosition;
-    private Animator _animator;
+    [Header("Avatar")]
+    [SerializeField] private GameObject _avatar;
+    [SerializeField] private float _levitationTime;
+    [SerializeField] private float _levitationDistance;
+    [SerializeField] private Transform _frontBody;
+    [SerializeField] private Transform _topFrontWing;
+    [SerializeField] private Transform _bottomFrontWing;
+    [SerializeField] private Transform _rightFrontWing;
+    [SerializeField] private Transform _leftFrontWing;
     #endregion
 
     #region PROPERTIES
     public static AvatarBehaviorController Instance { get; private set; }
-
-    public bool Initialized { get; private set; }
     #endregion
 
     #region UNITY METHODS
@@ -31,45 +33,64 @@ public class AvatarBehaviorController : MonoBehaviour
         }
 
         Instance = this;
-        Initialized = false;
     }
 
     private void Start()
     {
+        AnimateLevitation();
         HomeAssistantController.Instance.OnConnectionChanged += Handle_OnConnectionChanged;
-    }
-
-    private void Update()
-    {
-
     }
     #endregion
 
     #region METHODS
-    private void CreateAvatar()
+    private void AnimateLevitation()
     {
-        if (_selectedAvatar > _avatars.Length)
-        {
-            Initialized = false;
-            return;
-        }
+        DG.Tweening.Sequence sequence = DOTween.Sequence();
+        AnimationCurve easeUpDown = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        sequence.Append(_avatar.transform.DOMoveY(_avatar.transform.position.y + _levitationDistance, _levitationTime).SetEase(easeUpDown));
+        sequence.SetLoops(-1, LoopType.Yoyo);
+        sequence.Play();
+    }
 
-        _avatar = Instantiate(_avatars[_selectedAvatar]);
-        _avatar.transform.position = _spawnPosition.position;
-        _avatar.transform.parent = transform;
-        _animator = _avatar.GetComponentInChildren<Animator>();
+    public void FrontCoverAnimate(float rotation, float time)
+    {
 
-        //Only if avatar have animator
-        if (_animator != null)
-        {
-            Initialized = true;
+        DG.Tweening.Sequence sequenceBody = DOTween.Sequence();
+        sequenceBody.Append(_frontBody.DOLocalRotate(new Vector3(0f, 0f, rotation), time));
+        sequenceBody.Play();
+    }
 
-            //Initialize camera with created avatar
-            CameraController.Instance.InitializeCamera(_avatar.transform);
+    public void WingsAnimate(float rotation, float time)
+    {
+        DG.Tweening.Sequence sequenceTop = DOTween.Sequence();
+        sequenceTop.Append(_topFrontWing.DOLocalRotate(new Vector3(rotation, 0f, 0f), time));
+        sequenceTop.Append(_topFrontWing.DOLocalRotate(Vector3.zero, time));
+        sequenceTop.Play();
 
-            //Subscribe events for trigger animations
-            HomeAssistantController.Instance.OnDomainEvent += Handle_OnDomainEvent;
-        }
+        DG.Tweening.Sequence sequenceBottom = DOTween.Sequence();
+        sequenceBottom.Append(_bottomFrontWing.DOLocalRotate(new Vector3(-rotation, 0f, 0f), time));
+        sequenceBottom.Append(_bottomFrontWing.DOLocalRotate(Vector3.zero, time));
+        sequenceBottom.Play();
+
+        DG.Tweening.Sequence sequenceLeft = DOTween.Sequence();
+        sequenceLeft.Append(_leftFrontWing.DOLocalRotate(new Vector3(0f, rotation, 0f), time));
+        sequenceLeft.Append(_leftFrontWing.DOLocalRotate(Vector3.zero, time));
+        sequenceLeft.Play();
+
+        DG.Tweening.Sequence sequenceRight = DOTween.Sequence();
+        sequenceRight.Append(_rightFrontWing.DOLocalRotate(new Vector3(0f, -rotation, 0f), time));
+        sequenceRight.Append(_rightFrontWing.DOLocalRotate(Vector3.zero, time));
+        sequenceRight.Play();
+        
+    }
+
+    private void InitializeAvatar()
+    {
+        //Initialize camera with created avatar
+        CameraController.Instance.InitializeCamera(_avatar.transform);
+
+        //Subscribe events for trigger animations
+        HomeAssistantController.Instance.OnDomainEvent += Handle_OnDomainEvent;
     }
     #endregion
 
@@ -78,17 +99,8 @@ public class AvatarBehaviorController : MonoBehaviour
     {
         MainThreadDispatcher.Instance.Enqueue(() =>
         {
-            try
-            {
-                if (_animator != null)
-                {
-                    _animator.SetTrigger("OnLight");
-                }
-            }
-            catch (Exception ex)
-            {
-                string t = ex.GetBaseException().Message;
-            }
+            FrontCoverAnimate(180f, 1f);
+            WingsAnimate(45f, 0.5f);
         });
     }
 
@@ -98,12 +110,7 @@ public class AvatarBehaviorController : MonoBehaviour
         {
             if (connectionState == ConnectionStates.Connected)
             {
-                if (_animator != null)
-                {
-                    Destroy(_avatar);
-                }
-
-                CreateAvatar();
+                InitializeAvatar();
             }
         });
     }
